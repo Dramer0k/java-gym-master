@@ -10,6 +10,7 @@ public class TimetableTest {
 
     Timetable timetable = new Timetable();
     Coach coach = new Coach("Васильев", "Николай", "Сергеевич");
+    Coach coach2 = new Coach("Марусов", "Петр", "Алексеевич");
     Group groupChild = new Group("Акробатика для детей", Age.CHILD, 60);
     Group groupAdult = new Group("Акробатика для взрослых", Age.ADULT, 90);
 
@@ -23,7 +24,7 @@ public class TimetableTest {
         //Проверить, что за понедельник вернулось одно занятие
         Assertions.assertEquals(1, timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY).size());
         //Проверить, что за вторник не вернулось занятий
-        Assertions.assertNull(timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY));
+        Assertions.assertEquals(new TreeMap<>(), timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY));
     }
 
     @Test
@@ -62,7 +63,7 @@ public class TimetableTest {
 
 
         // Проверить, что за вторник не вернулось занятий
-        Assertions.assertNull(timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY));
+        Assertions.assertEquals(new TreeMap<>(), timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY));
     }
 
     @Test
@@ -75,12 +76,11 @@ public class TimetableTest {
         //Проверить, что за понедельник в 13:00 вернулось одно занятие
         Assertions.assertEquals(1, timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY, new TimeOfDay(13, 0)).size());
         //Проверить, что за понедельник в 14:00 не вернулось занятий
-        Assertions.assertNull(timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY, new TimeOfDay(14, 0)));
+        Assertions.assertEquals(new ArrayList<>(), timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY, new TimeOfDay(14, 0)));
     }
 
     @Test
     void testGetTwoTrainingSessionsForOneTime() {
-        Coach coach2 = new Coach("Марусов", "Петр", "Алексеевич");
 
         TrainingSession mondayAdultTrainingSession = new TrainingSession(groupAdult, coach,
                 DayOfWeek.MONDAY, new TimeOfDay(13, 0));
@@ -116,6 +116,36 @@ public class TimetableTest {
 
         Assertions.assertEquals(Age.ADULT, trainingSessions.getFirst().getGroup().getAge());
 
+    }
+
+    @Test
+    void testGetCountByCoaches() {
+
+        TrainingSession mondayChildTrainingSession = new TrainingSession(groupChild, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+        TrainingSession thursdayChildTrainingSession = new TrainingSession(groupChild, coach,
+                DayOfWeek.THURSDAY, new TimeOfDay(13, 0));
+        TrainingSession mondayChildTrainingSession2 = new TrainingSession(groupChild, coach2,
+                DayOfWeek.MONDAY, new TimeOfDay(14, 0));
+        TrainingSession thursdayChildTrainingSession2 = new TrainingSession(groupChild, coach2,
+                DayOfWeek.THURSDAY, new TimeOfDay(14, 0));
+        TrainingSession saturdayChildTrainingSession = new TrainingSession(groupChild, coach,
+                DayOfWeek.SATURDAY, new TimeOfDay(10, 0));
+
+        timetable.addNewTrainingSession(mondayChildTrainingSession);
+        timetable.addNewTrainingSession(thursdayChildTrainingSession);
+        timetable.addNewTrainingSession(saturdayChildTrainingSession);
+        timetable.addNewTrainingSession(mondayChildTrainingSession2);
+        timetable.addNewTrainingSession(thursdayChildTrainingSession2);
+
+        Assertions.assertEquals(3, timetable.getCountByCoaches().getFirst().getTrainingCount());
+        Assertions.assertEquals(2, timetable.getCountByCoaches().getLast().getTrainingCount());
+        Assertions.assertEquals(2, timetable.getCountByCoaches().size());
+    }
+
+    @Test
+    void testGetEmptyCountByCoaches() {
+        Assertions.assertEquals(new TreeSet<>(), timetable.getCountByCoaches());
     }
 
 }
