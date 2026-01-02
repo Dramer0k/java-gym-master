@@ -47,7 +47,7 @@ public class Timetable {
                 }
             }
         TreeSet<CounterOfTrainings> countByCoachSet = new TreeSet<>();
-        for(Map.Entry<Coach, Integer> entry : counterOfTrainings.entrySet()) {
+        for (Map.Entry<Coach, Integer> entry : counterOfTrainings.entrySet()) {
             Coach coach = entry.getKey();
             Integer count = entry.getValue();
             CounterOfTrainings counter = new CounterOfTrainings(coach, count);
