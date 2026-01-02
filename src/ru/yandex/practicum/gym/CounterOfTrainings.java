@@ -1,8 +1,5 @@
 package ru.yandex.practicum.gym;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class CounterOfTrainings implements Comparable<CounterOfTrainings> {
 
     private final Coach coach;
